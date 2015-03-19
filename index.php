@@ -91,14 +91,19 @@
 	}
         
         function isFolderPrivate($dir){
-            $private = false;
-           
+            $hasHtaccess = false;
+            $isPrivate = false;
+            $filePath = $dir . "/";
             if($dir = opendir($dir)) {
-                while(!$private && ($file = readdir($dir)) !== false) {
-                    $private = $file === ".htaccess" && $file !== "..";
+                while(!$hasHtaccess && ($file = readdir($dir)) !== false) {
+                    $hasHtaccess = $file === ".htaccess" && $file !== "..";
+                    if($hasHtaccess === true){             
+                        $content = file_get_contents($filePath . $file);  
+                        $isPrivate = strpos($content, "AuthType Basic");
+                    }
                 }    
             }
             closedir($dir);
-            return $private;
+            return $isPrivate;
         }
     ?>
